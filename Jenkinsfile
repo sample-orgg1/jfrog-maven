@@ -1,6 +1,3 @@
-def server = Artifactory.server('atuldevops.jfrog.io')
-def buildInfo = Artifactory.newBuildInfo()
-def rtMaven = Artifactory.newMavenBuild()
 pipeline {
     agent any
     stages {
@@ -25,20 +22,41 @@ pipeline {
         }
         stage('Artifactory configuration') { 
             steps {
-              rtMaven.tool = 'Maven-3.6.1' // Tool name from Jenkins configuration
-              rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server
-              rtMaven.resolver releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server
-              rtMaven.deployer.deployArtifacts = false // Disable artifacts deployment during Maven run
+                rtServer (
+                    id: "ARTIFACTORY_SERVER",
+                    url: SERVER_URL,
+                    credentialsId: CREDENTIALS
+                )
+
+                rtMavenDeployer (
+                    id: "MAVEN_DEPLOYER",
+                    serverId: "ARTIFACTORY_SERVER",
+                    releaseRepo: "libs-release-local",
+                    snapshotRepo: "libs-snapshot-local"
+                )
+
+                rtMavenResolver (
+                    id: "MAVEN_RESOLVER",
+                    serverId: "ARTIFACTORY_SERVER",
+                    releaseRepo: "libs-release",
+                    snapshotRepo: "libs-snapshot"
+                )
             }
         }
         stage ('Install') {
-            steps {
-             rtMaven.run pom: 'pom.xml', goals: 'install', buildInfo: buildInfo
-           }
+            rtMavenRun (
+                    tool: 'Maven-3.6.1', // Tool name from Jenkins configuration
+                    pom: 'pom.xml',
+                    goals: 'install',
+                    deployerId: "MAVEN_DEPLOYER",
+                    resolverId: "MAVEN_RESOLVER"
+                )
         }
         stage ('Deploy') {
             steps {
-            rtMaven.deployer.deployArtifacts buildInfo
+            rtPublishBuildInfo (
+                 serverId: "ARTIFACTORY_SERVER"
+             )
            }
         }
         stage ('Publish build info') {
