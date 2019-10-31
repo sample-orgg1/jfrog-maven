@@ -1,8 +1,8 @@
 pipeline {
-    agent any
     def server = Artifactory.server('atuldevops.jfrog.io')
     def buildInfo = Artifactory.newBuildInfo()
-    def rtMaven = Artifactory.newMavenBuild() 
+    def rtMaven = Artifactory.newMavenBuild()
+    agent any
     stages {
         stage('Code Checkout') { 
             steps {
