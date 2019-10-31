@@ -44,6 +44,7 @@ pipeline {
             }
         }
         stage ('Install') {
+         steps {
             rtMavenRun (
                     tool: 'Maven-3.6.1', // Tool name from Jenkins configuration
                     pom: 'pom.xml',
@@ -51,6 +52,7 @@ pipeline {
                     deployerId: "MAVEN_DEPLOYER",
                     resolverId: "MAVEN_RESOLVER"
                 )
+          }
         }
         stage ('Deploy') {
             steps {
