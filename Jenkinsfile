@@ -54,18 +54,14 @@ pipeline {
                 )
           }
         }
-        stage ('Deploy') {
+        stage (''Publish build info') {
             steps {
             rtPublishBuildInfo (
                  serverId: "ARTIFACTORY_SERVER"
              )
            }
         }
-        stage ('Publish build info') {
-           steps {
-            server.publishBuildInfo buildInfo
-          }
-        }
+        
         stage('Docker Image') { 
             steps {
              sh 'echo docker image is build'   
