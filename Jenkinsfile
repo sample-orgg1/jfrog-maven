@@ -1,5 +1,5 @@
 node {
-    def server = Artifactory.server('anshupa.jfrog.io')
+    def server = Artifactory.server('amrita.jfrog.io')
     def buildInfo = Artifactory.newBuildInfo()
     def rtMaven = Artifactory.newMavenBuild()
     
@@ -9,12 +9,12 @@ node {
     }
  
     stage ('Code Build') {
-        rtMaven.tool = 'maven' // Tool name from Jenkins configuration
+        rtMaven.tool = 'Maven-3.6.1' // Tool name from Jenkins configuration
         rtMaven.run pom: 'pom.xml', goals: 'clean compile'
     }
     
     stage ('UnitTest') {
-        rtMaven.tool = 'maven' // Tool name from Jenkins configuration
+        rtMaven.tool = 'Maven-3.6.1' // Tool name from Jenkins configuration
         rtMaven.run pom: 'pom.xml', goals: 'test'
     }
     
@@ -27,7 +27,7 @@ node {
     stage ('Artifactory configuration') {
         // Obtain an Artifactory server instance, defined in Jenkins --> Manage..:
          
-        rtMaven.tool = 'maven' // Tool name from Jenkins configuration
+        rtMaven.tool = 'Maven-3.6.1' // Tool name from Jenkins configuration
         rtMaven.deployer releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server
         rtMaven.resolver releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server
         rtMaven.deployer.deployArtifacts = false // Disable artifacts deployment during Maven run
