@@ -4,11 +4,10 @@ node {
     def rtMaven = Artifactory.newMavenBuild()
     
     
-    stage ('Checkout & Build') {
-        git url: 'https://github.com/itrainpulsars/jfrog-maven.git'
+    stage ('Checkout Code') {
+        git credentialsId: 'githbID-mani', url: 'https://github.com/itrainpulsars/jfrog-maven.git'
     }
- 
-    stage ('Code Build') {
+    stage ('Build') {
         rtMaven.tool = 'Maven-3.6.1' // Tool name from Jenkins configuration
         rtMaven.run pom: 'pom.xml', goals: 'clean compile'
     }
